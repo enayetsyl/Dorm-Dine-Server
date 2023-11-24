@@ -29,7 +29,19 @@ const client = new MongoClient(uri, {
 });
 
 // MIDDLEWARE
-
+  const verifyToken = (req, res, next) => {
+    const token = req?.cookies?.token;
+    if(!token){
+      return res.status(401).send({message: 'UNAUTHORIZED ACCESS'})
+    }
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+      if(err){
+        return res.status(401).send({message: 'UNAUTHORIZED ACCESS'})
+      }
+      req.user = decoded;
+      next()
+    })
+  }
 
 
 
@@ -60,7 +72,14 @@ async function run() {
     })
 
     // GET ROUTE -----------
-
+    // VERIFY TOKEN TEST GET ROUTE
+    app.get('/api/v1/test', verifyToken, async (req, res) => {
+      if(req.user.email !== req.query.email){
+        return res.status(403).send({message: 'forbidden'})
+      }
+      const result = await userCollection.find().toArray();
+      res.send(result)
+    })
 
     // POST ROUTE --------------
     // USER INFO POST ROUTE
@@ -84,6 +103,7 @@ async function run() {
       }
     })
 
+    
 
    
 
