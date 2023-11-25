@@ -51,6 +51,7 @@ async function run() {
 
     // COLLECTIONS
     const userCollection = client.db("DormDine").collection("users")
+    const mealCollection = client.db("DormDine").collection("meals")
 
     // AUTH RELATED API
     app.post('/api/v1/jwt', async(req, res) => {
@@ -120,7 +121,12 @@ async function run() {
       }
     })
 
-    
+    // ADD MEAL POST ROUTE
+    app.post('/api/v1/addMeal', async(req, res) =>{
+      const meal = req.body;
+      const result = await mealCollection.insertOne(meal)
+      res.send(result)
+    })
 
    
 
