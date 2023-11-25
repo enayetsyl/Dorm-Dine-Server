@@ -55,7 +55,7 @@ async function run() {
     // AUTH RELATED API
     app.post('/api/v1/jwt', async(req, res) => {
       const user = req.body;
-      console.log('user for token2', user)
+      // console.log('user for token2', user)
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1hr'});
 
       res.cookie('token', token, {
@@ -72,22 +72,39 @@ async function run() {
     })
 
     // GET ROUTE -----------
-    // VERIFY TOKEN TEST GET ROUTE
-    app.get('/api/v1/test', verifyToken, async (req, res) => {
-      if(req.user.email !== req.query.email){
-        return res.status(403).send({message: 'forbidden'})
-      }
-      const result = await userCollection.find().toArray();
+    // USER INFORMATION GET ROUTE
+    app.get('/api/v1/user',  async (req, res) => {
+     const userEmail = req.query.email;
+     console.log(userEmail)
+      const result = await userCollection.find({email: userEmail}).toArray();
       res.send(result)
     })
+
+    // ADMIN ROLE GET ROUTE
+    app.get('/api/v1/user/admin/:email', verifyToken, async (req, res) => {
+      const email = req.params.email;
+      if(email !== req.user.email){
+        return res.status(403).send({meassage: 'FORBIDDEN ACCESS'})
+      }
+      const query = {email:email};
+      const user = await userCollection.findOne(query)
+      let admin = false;
+      if(user){
+        admin = user?.role === 'admin';
+      }
+      res.send({admin})
+    })
+
 
     // POST ROUTE --------------
     // USER INFO POST ROUTE
 
     app.post('/api/v1/user', async(req, res) => {
       const user  = req.body;
+      console.log('hit by', user.email)
       const existingUser = await userCollection.findOne({email: user.email})
       if (existingUser) {
+        console.log('existing user hit')
         res.json({message: 'User already registered'})
       }
       else {
