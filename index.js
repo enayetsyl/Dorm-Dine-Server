@@ -52,6 +52,7 @@ async function run() {
     // COLLECTIONS
     const userCollection = client.db("DormDine").collection("users")
     const mealCollection = client.db("DormDine").collection("meals")
+    const upcomingMealCollection = client.db("DormDine").collection("upcomingMeals")
 
     // AUTH RELATED API
     app.post('/api/v1/jwt', async(req, res) => {
@@ -96,6 +97,20 @@ async function run() {
       res.send({admin})
     })
 
+    // MEALS FOR TAB GET ROUTE
+    app.get('/api/v1/meals', async(req, res) => {
+      const {mealCategory} = req.query;
+      let query = {}
+      if(mealCategory && mealCategory !== "All"){
+        query.mealCategory = mealCategory
+
+      }
+      const result = await mealCollection.find(query).toArray();
+      res.send(result)
+    })
+
+
+
 
     // POST ROUTE --------------
     // USER INFO POST ROUTE
@@ -122,9 +137,15 @@ async function run() {
     })
 
     // ADD MEAL POST ROUTE
-    app.post('/api/v1/addMeal', async(req, res) =>{
+    app.post('/api/v1/addMeal', verifyToken, async(req, res) =>{
       const meal = req.body;
       const result = await mealCollection.insertOne(meal)
+      res.send(result)
+    })
+    // UPCOMING MEAL POST ROUTE
+    app.post('/api/v1/upcomingMeal', verifyToken, async(req, res) =>{
+      const upcomingMeal = req.body;
+      const result = await upcomingMealCollection.insertOne(upcomingMeal)
       res.send(result)
     })
 
