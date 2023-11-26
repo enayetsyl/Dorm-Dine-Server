@@ -183,10 +183,29 @@ async function run() {
       } catch(error){
         console.log(error)
       }
-
     })
 
 
+    // PUT ROUTE
+    // USER MEMBERSHIP PACKAGE PUT ROUTE
+
+    app.put('/api/v1/checkout/:id', async(req,res) => {
+      const id = req.params.id
+      const membershipPackage = req.body;
+      const query = {_id: new ObjectId (id)}
+      const user = await userCollection.findOne(query)
+      if(!user.package){
+        user.package = membershipPackage.package;
+      }else{
+        user.package = membershipPackage.package;
+      }
+      const result = await userCollection.updateOne(query, {
+        $set:{
+          package: user.package
+        }
+      })
+      res.send(result)
+    })
 
 
     await client.db("admin").command({ ping: 1 });
