@@ -110,7 +110,19 @@ async function run() {
     })
 
 
+    // MEAL DETAILS GET ROUTE
 
+    app.get('/api/v1/meals/:id', async(req, res) => {
+      const id = req.params.id;
+      try{
+        const query = {_id: new ObjectId(id)}
+        const result = await mealCollection.findOne(query)
+        res.send(result)
+      }
+      catch(error){
+        console.log(error)
+      }
+    })
 
     // POST ROUTE --------------
     // USER INFO POST ROUTE
@@ -150,6 +162,31 @@ async function run() {
     })
 
    
+
+
+
+    // PATCH ROUTE
+    // LIKE UPDATE IN MEALS
+    app.patch('/api/v1/likes/:id', async(req, res) => {
+      try{
+        const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const updatedLikes = req.body;
+      const likeValue = parseInt(updatedLikes.likesData)
+      const updateDoc = {
+        $set:{
+          likes: likeValue,
+        }
+      }
+      const result = await mealCollection.updateOne(query, updateDoc)
+      res.send(result)
+      } catch(error){
+        console.log(error)
+      }
+
+    })
+
+
 
 
     await client.db("admin").command({ ping: 1 });
