@@ -53,6 +53,7 @@ async function run() {
     const userCollection = client.db("DormDine").collection("users")
     const mealCollection = client.db("DormDine").collection("meals")
     const upcomingMealCollection = client.db("DormDine").collection("upcomingMeals")
+    const requestMealCollection = client.db("DormDine").collection("requestMeals")
 
     // AUTH RELATED API
     app.post('/api/v1/jwt', async(req, res) => {
@@ -161,8 +162,17 @@ async function run() {
       res.send(result)
     })
 
-   
-
+    // REQUEST MEAL POST ROUTE 
+    app.post('/api/v1/mealrequest', async(req, res) => {
+      try{
+        const mealRequest = req.body;
+      const result = await requestMealCollection.insertOne(mealRequest)
+      res.send(result)
+      } catch (error){
+        console.log(error)
+        res.send(error)
+      }
+    })
 
 
     // PATCH ROUTE
