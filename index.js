@@ -117,8 +117,13 @@ async function run() {
       res.send(result)
     })
 
-    // MEAL DETAILS GET ROUTE
+    // ALL MEAL FOR ADMIN ROUTE
+    app.get('/api/v1/allmeal', async(req, res) => {
+      const result = await mealCollection.find().toArray();
+      res.send(result)
+    })
 
+    // MEAL DETAILS GET ROUTE
     app.get('/api/v1/meals/:id', async(req, res) => {
       const id = req.params.id;
       try{
@@ -296,6 +301,15 @@ async function run() {
       const id = req.params.id;
       const query = {_id: new ObjectId(id)}
       const result = await reviewCollection.deleteOne(query)
+      res.send(result)
+    })
+
+    // MEAL DELETE ROUTE
+    app.delete('/api/v1/meal/:id', async(req,res) => {
+      id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      console.log(query)
+      const result = await mealCollection.deleteOne(query)
       res.send(result)
     })
 
