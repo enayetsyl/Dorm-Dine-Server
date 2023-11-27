@@ -54,6 +54,7 @@ async function run() {
     const mealCollection = client.db("DormDine").collection("meals")
     const upcomingMealCollection = client.db("DormDine").collection("upcomingMeals")
     const requestMealCollection = client.db("DormDine").collection("requestMeals")
+    const reviewCollection = client.db("DormDine").collection("reviews")
 
     // AUTH RELATED API
     app.post('/api/v1/jwt', async(req, res) => {
@@ -178,6 +179,24 @@ async function run() {
       res.send(result)
       } catch (error){
         console.log(error)
+        res.send(error)
+      }
+    })
+
+    // REVIEW MEAL POST ROUTE
+    app.post('/api/v1/review', async(req,res) =>{
+      try{
+        const review = req.body;
+        console.log(review)
+        const result = await reviewCollection.insertOne(review)
+        await mealCollection.updateOne({'_id': new ObjectId(review.mealId)},
+        {
+          $set: {'reviews': review.reviews}
+        }
+        )
+        res.send(result)
+      }catch(error){
+        console.log('error in review post', error)
         res.send(error)
       }
     })
