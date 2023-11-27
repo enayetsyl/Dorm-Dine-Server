@@ -117,8 +117,14 @@ async function run() {
       const id = req.params.id;
       try{
         const query = {_id: new ObjectId(id)}
-        const result = await mealCollection.findOne(query)
-        res.send(result)
+
+        const mealResult = await mealCollection.findOne(query)
+
+        if(mealResult){
+          const reviews = await reviewCollection.find({mealId:id}).toArray()
+          mealResult.userReview = reviews;
+          res.send(mealResult)
+        }
       }
       catch(error){
         console.log(error)
