@@ -139,6 +139,14 @@ async function run() {
       res.send(result)
     })
 
+    // INDIVIDUAL USER REVIEW ROUTE
+    app.get('/api/v1/userreview/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {reviewerId:id}
+      const result = await reviewCollection.find(query).toArray();
+      res.send(result)
+  })
+
 
     // POST ROUTE --------------
     // USER INFO POST ROUTE
@@ -264,6 +272,13 @@ async function run() {
         res.send(result)
     })
 
+    // USER REVIEW DELETE ROUTE
+    app.delete('/api/v1/userreview/:id', async(req,res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await reviewCollection.deleteOne(query)
+      res.send(result)
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
