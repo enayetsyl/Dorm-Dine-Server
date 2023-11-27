@@ -76,11 +76,17 @@ async function run() {
     })
 
     // GET ROUTE -----------
-    // USER INFORMATION GET ROUTE
+    // SINGLE  USER INFORMATION GET ROUTE
     app.get('/api/v1/user',  async (req, res) => {
      const userEmail = req.query.email;
      console.log(userEmail)
       const result = await userCollection.find({email: userEmail}).toArray();
+      res.send(result)
+    })
+
+    // ALL USER INFORMATION GET ROUTE
+    app.get('/api/v1/allUser', async(req,res) => {
+      const result = await userCollection.find().toArray();
       res.send(result)
     })
 
@@ -234,6 +240,19 @@ async function run() {
       } catch(error){
         console.log(error)
       }
+    })
+
+    // ADMIN ROLE CHANGE ROUTE
+    app.patch('/api/v1/makeadmin/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const updateStatus = {
+        $set:{
+          role: 'admin',
+        }
+      }
+      const result = await userCollection.updateOne(query, updateStatus)
+      res.send(result)
     })
 
 
