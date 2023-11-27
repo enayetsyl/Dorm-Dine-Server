@@ -110,7 +110,6 @@ async function run() {
       res.send(result)
     })
 
-
     // MEAL DETAILS GET ROUTE
 
     app.get('/api/v1/meals/:id', async(req, res) => {
@@ -124,6 +123,15 @@ async function run() {
         console.log(error)
       }
     })
+
+    // INDIVIDUAL USER REQUEST MEAL 
+
+    app.get('/api/v1/requestmeal', async (req, res) => {
+      const {userId} = req.query.userId;
+      const result = await requestMealCollection.find(userId).toArray()
+      res.send(result)
+    })
+
 
     // POST ROUTE --------------
     // USER INFO POST ROUTE
@@ -215,6 +223,20 @@ async function run() {
         }
       })
       res.send(result)
+    })
+
+
+
+    // DELETE ROUTE
+    // INDIVIDUAL USER REQUEST MEAL DELETE ROUTE
+
+    app.delete('/api/v1/requestmeal/:id', async(req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const query = {_id: id}
+      console.log(query)
+        const result = await requestMealCollection.deleteOne(query)
+        res.send(result)
     })
 
 
