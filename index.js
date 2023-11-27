@@ -123,6 +123,12 @@ async function run() {
       res.send(result)
     })
 
+    // ALL REVIEW FOR ADMIN ROUTE
+    app.get('/api/v1/allreview', async(req, res) => {
+      const result = await reviewCollection.find().toArray();
+      res.send(result)
+    })
+
     // MEAL DETAILS GET ROUTE
     app.get('/api/v1/meals/:id', async(req, res) => {
       const id = req.params.id;
@@ -310,6 +316,7 @@ async function run() {
       const query = {_id: new ObjectId(id)}
       console.log(query)
       const result = await mealCollection.deleteOne(query)
+      await reviewCollection.deleteMany({mealId:id})
       res.send(result)
     })
 
