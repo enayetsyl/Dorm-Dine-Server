@@ -324,12 +324,15 @@ async function run() {
       const user = await userCollection.findOne(query)
       if(!user.package){
         user.package = membershipPackage.package;
+        user.badge = membershipPackage.badge
       }else{
         user.package = membershipPackage.package;
+        user.badge = membershipPackage.badge
       }
       const result = await userCollection.updateOne(query, {
         $set:{
-          package: user.package
+          package: user.package,
+          badge : user.badge,
         }
       })
       res.send(result)
