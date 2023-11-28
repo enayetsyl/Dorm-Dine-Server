@@ -135,6 +135,12 @@ async function run() {
       res.send(result)
     })
 
+    // UPCOMING MEAL GET ROUTE FOR ADMIN
+    app.get('/api/v1/upcomingmeal', async (req, res) => {
+      const result = await upcomingMealCollection.find().toArray()
+      res.send(result)
+    })
+
     // MEAL DETAILS GET ROUTE
     app.get('/api/v1/meals/:id', async(req, res) => {
       const id = req.params.id;
@@ -207,6 +213,24 @@ async function run() {
       const result = await upcomingMealCollection.insertOne(upcomingMeal)
       res.send(result)
     })
+
+    // UPCOMING MEAL PUBLISH ROUTE
+    app.post('/api/v1/mealpublish/:id', async(req, res) =>{
+      const id = req.params.id;
+      console.log(id)
+      const query = {_id: new ObjectId(id)}
+      console.log(query)
+      const result = await upcomingMealCollection.findOne(query)
+      console.log(result)
+      const newMeal = await mealCollection.insertOne(result)
+      console.log(newMeal)
+      if(newMeal.insertedId){
+        const deleteItem = await upcomingMealCollection.deleteOne(query)
+        res.send(deleteItem)
+      }else{
+        res.send({message:'Could not Publish'})
+      }
+    })   
 
     // REQUEST MEAL POST ROUTE 
     app.post('/api/v1/mealrequest', async(req, res) => {
