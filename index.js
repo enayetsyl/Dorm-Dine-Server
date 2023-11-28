@@ -176,6 +176,15 @@ async function run() {
       res.send(result)
   })
 
+    // ADMIN MEAL POST COUNT ROUTE
+      app.get('/api/v1/adminprofile/:id', async(req, res) => {
+        const id = req.params.id;
+        const query = {adminId:id}
+        const result = await mealCollection.find(query).toArray()
+        const result2 = await upcomingMealCollection.find(query).toArray()
+        const result3 = result.concat(result2)
+        res.send(result3)
+      })
 
     // POST ROUTE --------------
     // USER INFO POST ROUTE
@@ -217,13 +226,9 @@ async function run() {
     // UPCOMING MEAL PUBLISH ROUTE
     app.post('/api/v1/mealpublish/:id', async(req, res) =>{
       const id = req.params.id;
-      console.log(id)
       const query = {_id: new ObjectId(id)}
-      console.log(query)
       const result = await upcomingMealCollection.findOne(query)
-      console.log(result)
       const newMeal = await mealCollection.insertOne(result)
-      console.log(newMeal)
       if(newMeal.insertedId){
         const deleteItem = await upcomingMealCollection.deleteOne(query)
         res.send(deleteItem)
