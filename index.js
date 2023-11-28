@@ -129,6 +129,12 @@ async function run() {
       res.send(result)
     })
 
+    // REQUEST MEAL FOR ADMIN GET ROUTE
+    app.get('/api/v1/serveMeal', async(req, res) => {
+      const result = await requestMealCollection.find().toArray()
+      res.send(result)
+    })
+
     // MEAL DETAILS GET ROUTE
     app.get('/api/v1/meals/:id', async(req, res) => {
       const id = req.params.id;
@@ -266,6 +272,17 @@ async function run() {
       res.send(result)
     })
 
+    // SERVE MEAL STATUS CHANGE ROUTE
+    app.patch('/api/v1/servestatus/:id', async(req, res) => {
+      const id = req.params.id;
+      const updateStatus = {
+        $set:{
+          status:'delivered',
+        }
+      }
+      const result = await requestMealCollection.updateOne({_id:id}, updateStatus)
+      res.send(result)
+    })
 
     // PUT ROUTE
     // USER MEMBERSHIP PACKAGE PUT ROUTE
