@@ -164,8 +164,12 @@ async function run() {
     // INDIVIDUAL USER REQUEST MEAL 
 
     app.get('/api/v1/requestmeal', async (req, res) => {
-      const {userId} = req.query.userId;
-      const result = await requestMealCollection.find(userId).toArray()
+      const userEmail = req.query.userEmail;
+      console.log(req.query.userEmail)
+      console.log(userEmail)
+      const query = {userEmail: userEmail}
+      const result = await requestMealCollection.find(query).toArray()
+      console.log(result)
       res.send(result)
     })
 
@@ -289,6 +293,24 @@ async function run() {
       }
     })
 
+    app.patch('/api/v1/updateMealLikes/:id', async(req, res) => {
+      try{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const updatedLikes = req.body;
+        const likeValue = parseInt(updatedLikes.likesData)
+        const updateDoc = {
+          $set: {
+            likes: likeValue,
+          }
+        }
+        const result = await upcomingMealCollection.updateOne(query, updateDoc)
+        res.send(result)
+      } catch (error){
+        console.log(error)
+      }
+    })
+
     // ADMIN ROLE CHANGE ROUTE
     app.patch('/api/v1/makeadmin/:id', async(req, res) => {
       const id = req.params.id;
@@ -305,12 +327,28 @@ async function run() {
     // SERVE MEAL STATUS CHANGE ROUTE
     app.patch('/api/v1/servestatus/:id', async(req, res) => {
       const id = req.params.id;
+      console.log('api hit by', id)
       const updateStatus = {
         $set:{
           status:'delivered',
         }
       }
-      const result = await requestMealCollection.updateOne({_id:id}, updateStatus)
+      const result = await requestMealCollection.updateOne({_id: new ObjectId(id)}, updateStatus)
+      res.send(result)
+    })
+
+    // USER REVIEW UPDATE 
+    app.patch('/api/v1/updatereview/:id', async(req, res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id)}
+      const updateReview = req.body;
+      console.log(updateReview)
+      const updateDoc ={
+        $set:{
+          reviewText: updateReview.reviewText,
+        }
+      }
+      const result = await reviewCollection.updateOne(query, updateDoc)
       res.send(result)
     })
 
