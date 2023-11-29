@@ -120,7 +120,12 @@ async function run() {
 
     // ALL MEAL FOR ADMIN ROUTE
     app.get('/api/v1/allmeal', async(req, res) => {
-      const result = await mealCollection.find().toArray();
+      const page = parseInt(req.query.page)
+      const size = parseInt(req.query.size)
+      const result = await mealCollection.find()
+      .skip(page * size)
+      .limit(size)
+      .toArray();
       res.send(result)
     })
 
@@ -383,7 +388,6 @@ async function run() {
         }
       }
      const result = await mealCollection.updateOne(query, updateDoc)
-     console.log(result)
      res.send(result)
     })
 
@@ -473,6 +477,33 @@ async function run() {
         clientSecret: paymentIntent.client_secret
       })
     })
+
+
+
+
+    // PAGINATION ROUTE
+    // ALL MEALS PAGINATION
+    app.get('/api/v1/allmealCount', async(req, res) => {
+      const count = await mealCollection.estimatedDocumentCount();
+      res.send({count})
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
