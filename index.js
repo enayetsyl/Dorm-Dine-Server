@@ -191,6 +191,15 @@ async function run() {
         res.send(result3)
       })
 
+// MEAL EDIT ROUTE FOR ADMIN
+      app.get('/api/v1/editmeal/:id', async(req, res) => {
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await mealCollection.findOne(query)
+        res.send(result)
+       
+      })    
+     
     // POST ROUTE --------------
     // USER INFO POST ROUTE
 
@@ -342,7 +351,6 @@ async function run() {
       const id = req.params.id
       const query = {_id: new ObjectId(id)}
       const updateReview = req.body;
-      console.log(updateReview)
       const updateDoc ={
         $set:{
           reviewText: updateReview.reviewText,
@@ -350,6 +358,33 @@ async function run() {
       }
       const result = await reviewCollection.updateOne(query, updateDoc)
       res.send(result)
+    })
+
+    // EDIT MEAL PUT ROUTE
+    app.patch('/api/v1/editMeal/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const updateMeal = req.body;
+      const updateDoc = {
+        $set: {
+          mealTitle:updateMeal.mealTitle ,
+  mealCategory:updateMeal.mealCategory ,
+  mealImage:updateMeal.mealImage ,
+  ingredients:updateMeal.ingredients ,
+  description:updateMeal.description ,
+  price:updateMeal.price ,
+  rating:updateMeal.rating ,
+  postTime:updateMeal.postTime ,
+  likes:updateMeal.likes ,
+  reviews:updateMeal.reviews ,
+  distributorName:updateMeal.distributorName ,
+  distributorEmail:updateMeal.distributorEmail ,
+  adminId:updateMeal.adminId ,
+        }
+      }
+     const result = await mealCollection.updateOne(query, updateDoc)
+     console.log(result)
+     res.send(result)
     })
 
     // PUT ROUTE
