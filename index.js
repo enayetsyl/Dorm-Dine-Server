@@ -87,7 +87,13 @@ async function run() {
 
     // ALL USER INFORMATION GET ROUTE
     app.get('/api/v1/allUser', async(req,res) => {
-      const result = await userCollection.find().toArray();
+      const page = parseInt(req.query.page)
+      const size = parseInt(req.query.size)
+      
+      const result = await userCollection.find()
+      .skip(page * size)
+      .limit(size)
+      .toArray();
       res.send(result)
     })
 
@@ -122,28 +128,41 @@ async function run() {
     app.get('/api/v1/allmeal', async(req, res) => {
       const page = parseInt(req.query.page)
       const size = parseInt(req.query.size)
+     
       const result = await mealCollection.find()
       .skip(page * size)
       .limit(size)
       .toArray();
       res.send(result)
     })
-
+ 
     // ALL REVIEW FOR ADMIN ROUTE
     app.get('/api/v1/allreview', async(req, res) => {
-      const result = await reviewCollection.find().toArray();
+      const page = parseInt(req.query.page)
+      const size = parseInt(req.query.size)
+      const result = await reviewCollection.find().skip(page * size)
+      .limit(size)
+      .toArray();
       res.send(result)
-    })
+    }) 
 
     // REQUEST MEAL FOR ADMIN GET ROUTE
     app.get('/api/v1/serveMeal', async(req, res) => {
-      const result = await requestMealCollection.find().toArray()
+      const page = parseInt(req.query.page)
+      const size = parseInt(req.query.size)
+      const result = await requestMealCollection.find().skip(page * size)
+      .limit(size)
+      .toArray();
       res.send(result)
     })
 
     // UPCOMING MEAL GET ROUTE FOR ADMIN
     app.get('/api/v1/upcomingmeal', async (req, res) => {
-      const result = await upcomingMealCollection.find().toArray()
+      const page = parseInt(req.query.page)
+      const size = parseInt(req.query.size)
+      const result = await upcomingMealCollection.find().skip(page * size)
+      .limit(size)
+      .toArray();
       res.send(result)
     })
 
@@ -488,13 +507,30 @@ async function run() {
       res.send({count})
     })
 
+    // ALL USER PAGINATION
+    app.get('/api/v1/allUserCount', async(req, res) => {
+      const count = await userCollection.estimatedDocumentCount();
+      res.send({count})
+    })
+
+    // ALL REVIEW PAGINATION
+    app.get('/api/v1/allReviewCount', async(req, res) => {
+          const count = await reviewCollection.estimatedDocumentCount();
+      res.send({count})
+    })
+
+    // SERVE MEAL PAGINATION
+    app.get('/api/v1/allServeMealCount', async(req, res) => {
+      const count = await requestMealCollection.estimatedDocumentCount();
+  res.send({count})
+})
 
 
-
-
-
-
-
+    // UPCOMING MEAL PAGINATION
+    app.get('/api/v1/upcomingMealCount', async(req, res) => {
+      const count = await upcomingMealCollection.estimatedDocumentCount();
+  res.send({count})
+})
 
 
 
