@@ -12,6 +12,7 @@ require('dotenv').config()
 app.use(cors({
   origin:[
     'http://localhost:5173',
+    'https://dormdine-40828.web.app'
   ],
   credentials: true
 }));
@@ -48,7 +49,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     // COLLECTIONS
     const userCollection = client.db("DormDine").collection("users")
@@ -60,13 +61,14 @@ async function run() {
     // AUTH RELATED API
     app.post('/api/v1/jwt', async(req, res) => {
       const user = req.body;
-      // console.log('user for token2', user)
+      console.log('user for token2', user)
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1hr'});
 
       res.cookie('token', token, {
         httpOnly: true,
         secure: true,
-        sameSite: 'none'
+        sameSite:  'none',
+        maxAge: 60*60*1000,
       })
       .send({success: true})
     })
@@ -133,6 +135,13 @@ async function run() {
       .skip(page  * size)
       .limit(size)
       .toArray();
+      res.send(result)
+    })
+    // ALL MEAL FOR INFINITESCROLL ROUTE
+    app.get('/api/v1/allmealscroll', async(req, res) => {
+      console.log('id hit')
+      const result = await mealCollection.find().toArray();
+      console.log(result)
       res.send(result)
     })
   
@@ -271,6 +280,7 @@ async function run() {
       const newMeal = await mealCollection.insertOne(result)
       if(newMeal.insertedId){
         const deleteItem = await upcomingMealCollection.deleteOne(query)
+        console.log(deleteItem)
         res.send(deleteItem)
       }else{
         res.send({message:'Could not Publish'})
@@ -450,7 +460,7 @@ async function run() {
         console.log('reveiew delete', result)
         res.send(result)
     })
-
+ 
     // USER REVIEW DELETE ROUTE
     app.delete('/api/v1/userreview/:id', async(req,res) => {
       const id = req.params.id;
@@ -548,8 +558,8 @@ async function run() {
 
 
 
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // await client.close();
   }
