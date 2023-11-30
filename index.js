@@ -130,12 +130,12 @@ async function run() {
       const size = parseInt(req.query.size)
      
       const result = await mealCollection.find()
-      .skip(page * size)
+      .skip(page  * size)
       .limit(size)
       .toArray();
       res.send(result)
     })
- 
+  
     // ALL REVIEW FOR ADMIN ROUTE
     app.get('/api/v1/allreview', async(req, res) => {
       const page = parseInt(req.query.page)
@@ -193,7 +193,6 @@ async function run() {
       console.log(userEmail)
       const query = {userEmail: userEmail}
       const result = await requestMealCollection.find(query).toArray()
-      console.log(result)
       res.send(result)
     })
 
@@ -219,7 +218,10 @@ async function run() {
       app.get('/api/v1/editmeal/:id', async(req, res) => {
         const id = req.params.id;
         const query = {_id: new ObjectId(id)}
+        console.log(id)
+        console.log(query)
         const result = await mealCollection.findOne(query)
+        console.log(result)
         res.send(result)
        
       })    
@@ -247,7 +249,7 @@ async function run() {
         res.send(result)
       }
     })
-
+    
     // ADD MEAL POST ROUTE
     app.post('/api/v1/addMeal', verifyToken, async(req, res) =>{
       const meal = req.body;
@@ -441,10 +443,11 @@ async function run() {
 
     app.delete('/api/v1/requestmeal/:id', async(req, res) => {
       const id = req.params.id;
-      console.log(id)
-      const query = {_id: id}
+      console.log('review req id', id)
+      const query = {_id: new ObjectId(id)}
       console.log(query)
         const result = await requestMealCollection.deleteOne(query)
+        console.log('reveiew delete', result)
         res.send(result)
     })
 
@@ -512,16 +515,20 @@ async function run() {
       const count = await userCollection.estimatedDocumentCount();
       res.send({count})
     })
-
+    
     // ALL REVIEW PAGINATION
     app.get('/api/v1/allReviewCount', async(req, res) => {
-          const count = await reviewCollection.estimatedDocumentCount();
-      res.send({count})
+      console.log('review count hit')
+      const count = await reviewCollection.estimatedDocumentCount();
+      console.log(count)
+      res.send({count}) 
     })
-
+    
     // SERVE MEAL PAGINATION
     app.get('/api/v1/allServeMealCount', async(req, res) => {
       const count = await requestMealCollection.estimatedDocumentCount();
+      console.log('server meal count hit', count)
+
   res.send({count})
 })
 
